@@ -1,8 +1,9 @@
 import Role from '#models/role'
 import User from '#models/user'
 import AddUserModal from '@components/add_user'
+import { router } from '@inertiajs/react'
 import { DateTime } from 'luxon'
-import { useState } from 'react'
+import { ReactNode, useState } from 'react'
 import {
   FiUser,
   FiSearch,
@@ -13,6 +14,8 @@ import {
   FiChevronRight,
   FiFilter,
 } from 'react-icons/fi'
+import { toast } from 'react-toastify'
+import Layout from './layout'
 
 const Users = ({
   users,
@@ -43,6 +46,18 @@ const Users = ({
     const date = new Date(dateString as unknown as Date).toLocaleDateString()
 
     return date
+  }
+
+  const handleDeleteUser = (id: number) => {
+    router.delete('/user', {
+      data: { id },
+      onSuccess: () => {
+        toast.success('User deleted !')
+      },
+      onError: (e) => {
+        toast.error(typeof e === 'string' ? e : 'An error as occurred')
+      },
+    })
   }
 
   return (
@@ -157,7 +172,10 @@ const Users = ({
                             <button className="text-blue-600 hover:text-blue-900 mr-4">
                               <FiEdit2 className="inline mr-1" /> Edit
                             </button>
-                            <button className="text-red-600 hover:text-red-900">
+                            <button
+                              onClick={() => handleDeleteUser(user.id)}
+                              className="text-red-600 hover:text-red-900"
+                            >
                               <FiTrash2 className="inline mr-1" /> Delete
                             </button>
                           </>
@@ -221,5 +239,7 @@ const Users = ({
     </>
   )
 }
+
+Users.layout = (page: ReactNode) => <Layout children={page} />
 
 export default Users

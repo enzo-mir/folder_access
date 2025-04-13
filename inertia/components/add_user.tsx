@@ -20,7 +20,12 @@ const AddUserModal = ({
     return result.trim()
   }
 
-  const { processing, post, data, setData, reset } = useForm({
+  const { processing, post, data, setData, reset } = useForm<{
+    username: string
+    role: string
+    code: string
+    email?: string
+  }>({
     username: '',
     role: roles[0].role,
     code: generateRandomCode(),
@@ -42,6 +47,7 @@ const AddUserModal = ({
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
+
     setData((prev) => ({
       ...prev,
       [name]: value,
@@ -128,6 +134,19 @@ const AddUserModal = ({
                   <FiRefreshCw className="mr-1" /> Generate
                 </button>
               </div>
+            </div>
+            <div className="flex flex-col mt-6">
+              <label htmlFor="email">
+                Email to send<span className="text-sm"> (optional)</span>
+              </label>
+              <input
+                onChange={handleChange}
+                value={data.email}
+                className={`block w-full h-full rounded-md border p-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500`}
+                type="email"
+                name="email"
+                id="email"
+              />
             </div>
           </div>
 
