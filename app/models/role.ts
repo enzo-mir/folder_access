@@ -6,7 +6,7 @@ export default class Role extends BaseModel {
   declare id: number
 
   @column()
-  declare name: string
+  declare role: string
 
   @column()
   declare level: number

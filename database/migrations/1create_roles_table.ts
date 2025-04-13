@@ -9,6 +9,13 @@ export default class extends BaseSchema {
       table.string('role', 80).notNullable().unique()
       table.integer('level').defaultTo(0)
     })
+
+    this.defer(async (db) => {
+      await db.table(this.tableName).insert([
+        { role: 'admin', level: 1 },
+        { role: 'user', level: 0 },
+      ])
+    })
   }
 
   async down() {
