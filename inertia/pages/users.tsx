@@ -39,8 +39,10 @@ const Users = ({
   const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser)
   const totalPages = Math.ceil(filteredUsers.length / usersPerPage)
 
-  const formatDate = (dateString: DateTime) => {
-    return dateString.toLocaleString({ year: 'numeric', month: 'short', day: 'numeric' })
+  const formatDate = (dateString: DateTime<boolean>) => {
+    const date = new Date(dateString as unknown as Date).toLocaleDateString()
+
+    return date
   }
 
   return (
@@ -143,7 +145,7 @@ const Users = ({
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {formatDate(user.createdAt)}
+                        <>{formatDate(user.createdAt)}</>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         {user.id === userLogged.id ? (

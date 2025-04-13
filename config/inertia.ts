@@ -1,3 +1,4 @@
+import Role from '#models/role'
 import { defineConfig } from '@adonisjs/inertia'
 import type { InferSharedProps } from '@adonisjs/inertia/types'
 
@@ -12,6 +13,11 @@ const inertiaConfig = defineConfig({
    */
   sharedData: {
     user: (ctx) => ctx.inertia.always(() => ctx.auth.user),
+    roles: (ctx) =>
+      ctx.inertia.always(
+        async () =>
+          ctx.auth.user?.role === 'admin' && (await Role.query().select('*').orderBy('level'))
+      ),
   },
 
   /**

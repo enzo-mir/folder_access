@@ -19,12 +19,6 @@ createInertiaApp({
   },
 
   setup({ el, App, props }) {
-    hydrateRoot(
-      el,
-      <>
-        <ToastContainer />
-        <App {...props} />
-      </>
-    )
+    hydrateRoot(el, <App {...props} />)
   },
 })

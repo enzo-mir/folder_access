@@ -19,6 +19,6 @@ import { Bouncer } from '@adonisjs/bouncer'
  * Delete the following ability to start from
  * scratch
  */
-export const userPageVisit = Bouncer.ability((user: User) => {
+export const adminUsage = Bouncer.ability((user: User) => {
   return user.role === 'admin'
 })

@@ -1,5 +1,4 @@
-import { userPageVisit } from '#abilities/users_page'
-import Role from '#models/role'
+import { adminUsage } from '#abilities/users_page'
 import User from '#models/user'
 import type { HttpContext } from '@adonisjs/core/http'
 
@@ -20,16 +19,14 @@ export default class PagesController {
   }
 
   async users(ctx: HttpContext) {
-    if (!(await ctx.bouncer.allows(userPageVisit))) {
+    if (!(await ctx.bouncer.allows(adminUsage))) {
       return ctx.response.redirect().toRoute('dashboard')
     }
 
     const users = await User.query().select('id', 'username', 'role', 'created_at')
-    const roles = await Role.query().select('*').orderBy('level')
 
     return ctx.inertia.render('users', {
       users,
-      roles,
       errors: ctx.session.flashMessages.get('errors'),
     })
   }
