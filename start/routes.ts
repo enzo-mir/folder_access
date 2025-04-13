@@ -9,6 +9,7 @@
 
 const AuthController = () => import('#controllers/auth_controller')
 const PagesController = () => import('#controllers/pages_controller')
+const FilesController = () => import('#controllers/files_controller')
 import router from '@adonisjs/core/services/router'
 const SettingsController = () => import('#controllers/settings_controller')
 
@@ -16,6 +17,7 @@ router.on('/').renderInertia('home')
 router.get('/login', [PagesController, 'login']).as('login')
 router.post('/login', [AuthController, 'login'])
 router.get('/dashboard/:folder?', [PagesController, 'dashboard']).as('dashboard')
+router.post('/upload/:folder?', [FilesController, 'create'])
 
 router.get('/logout', async ({ auth, response }) => {
   await auth.use('web').logout()

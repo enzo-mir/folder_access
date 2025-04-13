@@ -1,9 +1,19 @@
 import User from '#models/user'
-import { FiFile, FiFolder, FiSearch, FiUser, FiChevronRight, FiHome } from 'react-icons/fi'
+import {
+  FiFile,
+  FiFolder,
+  FiSearch,
+  FiUser,
+  FiChevronRight,
+  FiHome,
+  FiPlus,
+  FiUpload,
+} from 'react-icons/fi'
 import Layout from './layout'
-import { ReactNode } from 'react'
-import { Link, router, usePage } from '@inertiajs/react'
+import { ReactNode, useState } from 'react'
+import { Link, router } from '@inertiajs/react'
 import { FilesType } from '../../app/types/files.type'
+import AddPath from '@components/add_path'
 
 const Dashboard = ({
   user,
@@ -14,7 +24,7 @@ const Dashboard = ({
   user: User
   files: FilesType
 }) => {
-  const url = usePage().url
+  const [newPath, setNewPath] = useState<'file' | 'folder' | null>(null)
   const normalizeSize = (size: number): string => {
     if (size <= 0) return '0 b'
 
@@ -24,7 +34,6 @@ const Dashboard = ({
     return `${(size / 1024 ** index).toFixed(2)} ${units[index]}`
   }
 
-  // Parse current path into breadcrumbs
   const pathParts = currentPath.split('/').filter((part) => part !== '')
   const breadcrumbs = pathParts.map((part, index) => {
     const path = '/dashboard/' + pathParts.slice(0, index + 1).join('/')
@@ -72,8 +81,7 @@ const Dashboard = ({
         </Link>
       </section>
 
-      {/* Breadcrumb Navigation */}
-      <div className="mb-6 bg-white rounded-lg shadow-sm p-4">
+      <div className="mb-6 flex flex-col sm:flex-row justify-between gap-4 bg-white rounded-lg shadow-sm p-4">
         <nav className="flex" aria-label="Breadcrumb">
           <ol className="flex items-center space-x-2">
             <li>
@@ -100,11 +108,29 @@ const Dashboard = ({
             ))}
           </ol>
         </nav>
+
+        <div className="flex gap-2">
+          <button
+            onClick={() => setNewPath('file')}
+            className="flex items-center px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
+            <FiUpload className="mr-2" />
+            <span>Add File</span>
+          </button>
+          <button
+            onClick={() => setNewPath('folder')}
+            className="flex items-center px-3 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+          >
+            <FiPlus className="mr-2" />
+            <span>Add Folder</span>
+          </button>
+        </div>
       </div>
 
       {files.length ? (
         <section className="mt-4 grid place-items-center">
           <ul className="space-y-3 w-[80%]">
+            {newPath ? <AddPath newPath={newPath} setNewPath={setNewPath} /> : null}
             {files.map((file, id) => (
               <li
                 key={id}
@@ -134,7 +160,7 @@ const Dashboard = ({
                   )}
                   {file.modified_at && (
                     <span className="hidden md:inline-block">
-                      {new Date(file.modified_at).toLocaleDateString(undefined, {
+                      {new Date(file.modified_at).toLocaleDateString('en', {
                         year: 'numeric',
                         month: 'short',
                         day: 'numeric',
@@ -144,6 +170,12 @@ const Dashboard = ({
                 </div>
               </li>
             ))}
+          </ul>
+        </section>
+      ) : newPath ? (
+        <section className="mt-4 grid place-items-center">
+          <ul className="space-y-3 w-[80%]">
+            <AddPath newPath={newPath} setNewPath={setNewPath} />
           </ul>
         </section>
       ) : (
