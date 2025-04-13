@@ -14,34 +14,39 @@ const Header = ({ size = 'base' as 'sm' | 'base' | 'lg', fullWidth = false }) =>
 
   return (
     <>
-      <header className="p-4 flex gap-4 justify-end w-full">
+      <header className="p-4 flex gap-4 h-[fit-content] justify-end w-full">
         {user ? (
-          <button
-            onClick={() => setOpenSettings(true)}
-            className="w-fit justify-self-end inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          >
-            <svg
-              className="h-5 w-5 mr-2 text-gray-500"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+          <>
+            <Link className="underline text-indigo-500 h-fit self-center" href={'/dashboard'}>
+              Dashboard
+            </Link>
+            <button
+              onClick={() => setOpenSettings(true)}
+              className="w-fit justify-self-end inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M9.75 3a.75.75 0 01.75.75v.402a7.503 7.503 0 012.25 0v-.402a.75.75 0 011.5 0v.535a7.48 7.48 0 013.03 1.247l.382-.382a.75.75 0 011.061 1.06l-.382.382a7.48 7.48 0 011.248 3.03h.535a.75.75 0 010 1.5h-.402a7.503 7.503 0 010 2.25h.402a.75.75 0 010 1.5h-.535a7.48 7.48 0 01-1.248 3.03l.382.382a.75.75 0 01-1.06 1.061l-.383-.382a7.48 7.48 0 01-3.03 1.247v.535a.75.75 0 01-1.5 0v-.402a7.503 7.503 0 01-2.25 0v.402a.75.75 0 01-1.5 0v-.535a7.48 7.48 0 01-3.03-1.248l-.382.383a.75.75 0 01-1.061-1.061l.382-.382a7.48 7.48 0 01-1.247-3.03h-.535a.75.75 0 010-1.5h.402a7.503 7.503 0 010-2.25H3a.75.75 0 010-1.5h.535a7.48 7.48 0 011.247-3.03l-.382-.382a.75.75 0 011.06-1.061l.383.382A7.48 7.48 0 019 4.285V3.75A.75.75 0 019.75 3z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-              />
-            </svg>
-            Settings
-          </button>
+              <svg
+                className="h-5 w-5 mr-2 text-gray-500"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9.75 3a.75.75 0 01.75.75v.402a7.503 7.503 0 012.25 0v-.402a.75.75 0 011.5 0v.535a7.48 7.48 0 013.03 1.247l.382-.382a.75.75 0 011.061 1.06l-.382.382a7.48 7.48 0 011.248 3.03h.535a.75.75 0 010 1.5h-.402a7.503 7.503 0 010 2.25h.402a.75.75 0 010 1.5h-.535a7.48 7.48 0 01-1.248 3.03l.382.382a.75.75 0 01-1.06 1.061l-.383-.382a7.48 7.48 0 01-3.03 1.247v.535a.75.75 0 01-1.5 0v-.402a7.503 7.503 0 01-2.25 0v.402a.75.75 0 01-1.5 0v-.535a7.48 7.48 0 01-3.03-1.248l-.382.383a.75.75 0 01-1.061-1.061l.382-.382a7.48 7.48 0 01-1.247-3.03h-.535a.75.75 0 010-1.5h.402a7.503 7.503 0 010-2.25H3a.75.75 0 010-1.5h.535a7.48 7.48 0 011.247-3.03l-.382-.382a.75.75 0 011.06-1.061l.383.382A7.48 7.48 0 019 4.285V3.75A.75.75 0 019.75 3z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+              Settings
+            </button>
+          </>
         ) : null}
         <Link
           href={user ? '/logout' : '/login'}

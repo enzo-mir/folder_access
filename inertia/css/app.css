@@ -13,3 +13,9 @@ body,
   scroll-behavior: smooth;
   overflow-x: hidden;
 }
+
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}

@@ -63,7 +63,7 @@ const Users = ({
   return (
     <>
       {isAddModalOpen ? <AddUserModal setOpen={setIsAddModalOpen} roles={roles} /> : null}
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto h[100%] px-4 py-8">
         <header className="mb-8">
           <h1 className="text-3xl font-bold text-gray-800 flex items-center">
             <FiUser className="mr-2" /> User Management

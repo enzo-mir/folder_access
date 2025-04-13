@@ -33,6 +33,7 @@ const AddRole = () => {
         value={data.role}
         onChange={(e) => setData({ ...data, role: e.target.value })}
         placeholder="New role name"
+        required
         className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       <input
@@ -42,6 +43,7 @@ const AddRole = () => {
         onChange={(e) => setData({ ...data, level: Number.parseInt(e.target.value) })}
         id="level"
         min={0}
+        required
         className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       <button

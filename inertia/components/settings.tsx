@@ -1,10 +1,11 @@
 import Role from '#models/role'
 import User from '#models/user'
 import { router, usePage } from '@inertiajs/react'
-import React, { useState } from 'react'
+import React, { ChangeEvent, useState } from 'react'
 import { FiX, FiFolder, FiUser, FiPlus, FiTrash2, FiSave, FiChevronDown } from 'react-icons/fi'
 import AddRole from './add_role'
 import { toast } from 'react-toastify'
+import { useDebounce } from '../hooks/use_debounc'
 
 const SettingsModal = ({ setOpen }: { setOpen: React.Dispatch<React.SetStateAction<boolean>> }) => {
   const [activeTab, setActiveTab] = useState('roles')
@@ -28,8 +29,9 @@ const SettingsModal = ({ setOpen }: { setOpen: React.Dispatch<React.SetStateActi
     Editor: ['/projects', '/assets'],
     Viewer: ['/public'],
   })
-  const [newPermission, setNewPermission] = useState('')
   const [selectedRoleForPermission, setSelectedRoleForPermission] = useState('Admin')
+
+  const handleChangefolderPath = (e: ChangeEvent<HTMLInputElement>) => {}
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -123,8 +125,7 @@ const SettingsModal = ({ setOpen }: { setOpen: React.Dispatch<React.SetStateActi
                 <div className="flex gap-2 mb-4">
                   <input
                     type="text"
-                    value={newPermission}
-                    onChange={(e) => setNewPermission(e.target.value)}
+                    onChange={(e) => useDebounce(handleChangefolderPath, 300)}
                     placeholder="Folder path (e.g. /projects)"
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />

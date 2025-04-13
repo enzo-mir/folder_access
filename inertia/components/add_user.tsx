@@ -82,8 +82,8 @@ const AddUserModal = ({
                 autoComplete="name"
                 value={data.username}
                 onChange={handleChange}
-                className={`pl-10 block w-full rounded-md border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500`}
-                placeholder="johndoe"
+                className={`pl-10 pb-2 block w-full rounded-md border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500`}
+                required
               />
             </div>
           </div>
@@ -97,7 +97,8 @@ const AddUserModal = ({
               name="role"
               value={data.role}
               onChange={handleChange}
-              className="block w-full rounded-md border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              required
+              className="block w-full p-1 rounded-md border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
             >
               {roles.map((role) => (
                 <option key={role.id} value={role.level}>
@@ -119,6 +120,7 @@ const AddUserModal = ({
                   name="code"
                   value={data.code}
                   onChange={handleChange}
+                  required
                   className={`block w-full h-full rounded-md border p-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500`}
                   readOnly={true}
                 />

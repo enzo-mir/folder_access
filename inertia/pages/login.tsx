@@ -1,6 +1,7 @@
 import { useForm } from '@inertiajs/react'
-import React from 'react'
+import React, { ReactNode } from 'react'
 import { toast } from 'react-toastify'
+import Layout from './layout'
 
 const Login = () => {
   const { post, data, setData } = useForm<{
@@ -24,7 +25,7 @@ const Login = () => {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <main className="h-full bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
           <svg
@@ -98,5 +99,7 @@ const Login = () => {
     </main>
   )
 }
+
+Login.layout = (page: ReactNode) => <Layout children={page} />
 
 export default Login
