@@ -1,3 +1,4 @@
+import User from '#models/user'
 import AddRole from '@components/add_role'
 import { router } from '@inertiajs/react'
 import { FiTrash2 } from 'react-icons/fi'
@@ -8,8 +9,12 @@ const Role = ({
   user,
 }: {
   roles: { id: number; role: string; level: number }[]
-  user: { role: string }
+  user: User
 }) => {
+  const levelRoleuser = roles.find((role) => role.role === user.role)?.level || 0
+
+  console.log(levelRoleuser)
+
   const deleteRole = (id: number) => {
     router.delete('/role', {
       data: { id },
@@ -22,7 +27,7 @@ const Role = ({
     })
   }
   return (
-    <section>
+    <section className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow">
       <div className="mb-6">
         <h4 className="text-lg font-medium text-gray-800 mb-3">Manage Roles</h4>
         <AddRole />
@@ -31,7 +36,7 @@ const Role = ({
             <div key={role.id} className="grid grid-cols-6 items-center p-3 bg-gray-50 rounded-md">
               <span className="col-span-2 font-medium w-fit max-w-[40%]">{role.role}</span>
               <span className="col-span-2 text-center text-gray-500">{role.level}</span>
-              {!role.role.includes(user.role) ? (
+              {levelRoleuser > role.level && role.role !== user.role ? (
                 <button
                   className="text-red-600 hover:text-red-800 p-1 w-[3em] flex justify-end col-end-8"
                   title="Delete role"

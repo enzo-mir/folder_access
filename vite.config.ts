@@ -16,6 +16,7 @@ export default defineConfig({
       '@components': `${getDirname(import.meta.url)}/inertia/components/`,
       '@pages': `${getDirname(import.meta.url)}/inertia/pages/`,
       '@css': `${getDirname(import.meta.url)}/inertia/css/`,
+      '@provider': `${getDirname(import.meta.url)}/inertia/provider/`,
     },
   },
 })

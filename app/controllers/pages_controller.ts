@@ -92,11 +92,28 @@ export default class PagesController {
       return ctx.response.redirect().toRoute('dashboard')
     }
 
-    const folderPermissions = await FolderPermission.query().select('*')
+    const folderPermissions = await FolderPermission.query().select('*').orderBy('id')
+
+    const permissionsByRole = folderPermissions.reduce<
+      Record<string, Array<{ id: number; path: string }>>
+    >((acc, permission) => {
+      const role = permission.permission
+
+      if (!acc[role]) {
+        acc[role] = []
+      }
+
+      acc[role].push({
+        id: permission.id,
+        path: permission.path,
+      })
+
+      return acc
+    }, {})
 
     return ctx.inertia.render('settings', {
       errors: ctx.session.flashMessages.get('errors'),
-      folderPermissions,
+      folderPermissions: permissionsByRole,
     })
   }
 }

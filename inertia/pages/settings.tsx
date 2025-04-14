@@ -5,17 +5,18 @@ import { ReactNode, useState } from 'react'
 import { FiFolder, FiUser } from 'react-icons/fi'
 import Permission from '@components/settings/permission'
 import Layout from './layout'
+import { FolderPermissionType } from 'types/folder_permission'
 
 const Settings = ({
-  folderPermission,
+  folderPermissions,
   roles,
   user,
 }: {
-  folderPermission: Record<string, string[]>
+  folderPermissions: FolderPermissionType
   roles: Role[]
   user: User
 }) => {
-  const [activeTab, setActiveTab] = useState('roles')
+  const [activeTab, setActiveTab] = useState<'roles' | 'permissions'>('permissions')
 
   return (
     <div className="bg-white min-h-screen p-6">
@@ -44,7 +45,7 @@ const Settings = ({
         {activeTab === 'roles' ? <RoleComponent roles={roles} user={user} /> : null}
 
         {activeTab === 'permissions' ? (
-          <Permission folderPermissions={folderPermission} roles={roles} />
+          <Permission folderPermissions={folderPermissions} roles={roles} />
         ) : null}
       </div>
     </div>

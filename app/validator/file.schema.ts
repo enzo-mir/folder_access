@@ -41,3 +41,12 @@ export const addFileSchema = z.object({
 export const editFileSchema = z.object({
   content: z.union([z.string(), z.null()]).transform((val) => val ?? ''),
 })
+
+export const searchFileSchema = z.object({
+  path: z.string().min(1, 'Path cannot be empty'),
+  /*  .transform((val) => {
+      const v = val.split('/')
+      v.shift()
+      return v
+    }), */
+})
