@@ -3,38 +3,65 @@ import User from '#models/user'
 import type { HttpContext } from '@adonisjs/core/http'
 import drive from '@adonisjs/drive/services/main'
 import { FilesType } from '../types/files.type.js'
+import { DriveDirectory, DriveFile } from '@adonisjs/drive'
+import fs from 'node:fs'
 
 export default class PagesController {
   async dashboard(ctx: HttpContext) {
     const folderPath = ctx.params.folder ? decodeURIComponent(ctx.params.folder) : ''
     const disk = drive.use()
-    const response = await disk.listAll(folderPath)
-    const files: FilesType = []
 
-    for (const item of response.objects) {
-      if (item.isFile) {
-        const metadata = await item.getMetaData()
-        files.push({
-          name: item.name,
-          modified_at: metadata.lastModified,
-          size: metadata.contentLength,
-          type: 'file',
-        })
-      } else {
-        files.push({
-          name: item.name,
-          modified_at: null,
-          size: null,
-          type: 'folder',
-        })
+    const getFiles = async () => {
+      if (folderPath === '') {
+        return await disk.listAll()
       }
+      return disk
+        .exists(folderPath)
+        .then(async () => {
+          return await disk.listAll(folderPath)
+        })
+        .catch(() => {
+          return {}
+        })
     }
 
-    return ctx.inertia.render('dashboard', {
-      errors: ctx.session.flashMessages.get('errors'),
-      files,
-      currentPath: folderPath,
-    })
+    const response = await getFiles()
+    const files: FilesType = []
+
+    if ('objects' in response) {
+      for (const item of response.objects as Iterable<DriveFile | DriveDirectory>) {
+        if (item.isFile) {
+          const metadata = await item.getMetaData()
+          files.push({
+            name: item.name,
+            modified_at: metadata.lastModified,
+            size: metadata.contentLength,
+            type: 'file',
+          })
+        } else {
+          files.push({
+            name: item.name,
+            modified_at: null,
+            size: null,
+            type: 'folder',
+          })
+        }
+      }
+
+      return ctx.inertia.render('dashboard', {
+        errors: ctx.session.flashMessages.get('errors'),
+        files,
+        currentPath: folderPath,
+      })
+    } else {
+      const content = fs.readFileSync(`storage/${folderPath}`, 'utf-8')
+
+      return ctx.inertia.render('dashboard', {
+        errors: ctx.session.flashMessages.get('errors'),
+        content,
+        currentPath: folderPath,
+      })
+    }
   }
 
   async login(ctx: HttpContext) {

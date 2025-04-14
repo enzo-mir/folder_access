@@ -37,3 +37,7 @@ export const addFileSchema = z.object({
   fileName: filenameSchema,
   direName: dirNameSchema,
 })
+
+export const editFileSchema = z.object({
+  content: z.union([z.string(), z.null()]).transform((val) => val ?? ''),
+})

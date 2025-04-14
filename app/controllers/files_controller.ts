@@ -1,5 +1,5 @@
 import { HttpContext } from '@adonisjs/core/http'
-import { addFileSchema } from '../validator/file.schema.js'
+import { addFileSchema, editFileSchema } from '../validator/file.schema.js'
 import drive from '@adonisjs/drive/services/main'
 import fs from 'node:fs'
 import { z } from 'zod'
@@ -35,6 +35,28 @@ export default class FilesController {
       } else if (direName) {
         await fs.promises.mkdir(`storage/${folderPath}/${direName}`, { recursive: true })
       }
+      return ctx.response.redirect().back()
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        ctx.session.flash({ errors: error.issues[0].message })
+      } else {
+        ctx.session.flash({ errors: 'An unknown error occurred' })
+      }
+      return ctx.response.redirect().back()
+    }
+  }
+
+  async update(ctx: HttpContext) {
+    const folderPath = ctx.params.folder ? decodeURIComponent(ctx.params.folder) : null
+
+    try {
+      if (!folderPath) throw new Error('Folder path is required')
+
+      const { content } = await editFileSchema.parseAsync(ctx.request.all())
+      const filePath = `storage/${folderPath}`
+
+      fs.writeFileSync(filePath, content, { encoding: 'utf-8' })
+
       return ctx.response.redirect().back()
     } catch (error) {
       if (error instanceof z.ZodError) {
