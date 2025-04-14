@@ -10,12 +10,14 @@
 const AuthController = () => import('#controllers/auth_controller')
 const PagesController = () => import('#controllers/pages_controller')
 const FilesController = () => import('#controllers/files_controller')
+const PermissionsController = () => import('#controllers/permissions_controller')
 import router from '@adonisjs/core/services/router'
 const SettingsController = () => import('#controllers/settings_controller')
 
 router.on('/').renderInertia('home')
 router.get('/login', [PagesController, 'login']).as('login')
 router.post('/login', [AuthController, 'login'])
+
 router.get('/dashboard/:folder?', [PagesController, 'dashboard']).as('dashboard')
 router.post('/upload/:folder?', [FilesController, 'create'])
 
@@ -29,3 +31,5 @@ router.post('/role', [SettingsController, 'createRole'])
 router.delete('/role', [SettingsController, 'deleteRole'])
 router.delete('/user', [SettingsController, 'deleteUser'])
 router.put('/dashboard/:folder?', [FilesController, 'update'])
+router.get('/settings', [PagesController, 'settings'])
+router.post('/folder-permission', [PermissionsController, 'create'])

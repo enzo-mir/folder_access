@@ -76,6 +76,8 @@ export default class SettingsController {
       await Role.create(payload)
       return ctx.response.redirect().back()
     } catch (error) {
+      console.log(error)
+
       if ('code' in error) {
         if (error.code === 'ER_DUP_ENTRY') {
           ctx.session.flash({

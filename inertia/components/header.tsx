@@ -1,6 +1,4 @@
-import { Link, usePage } from '@inertiajs/react'
-import { useState } from 'react'
-import SettingsModal from './settings'
+import { Link, router, usePage } from '@inertiajs/react'
 
 const Header = ({ size = 'base' as 'sm' | 'base' | 'lg', fullWidth = false }) => {
   const sizeClasses = {
@@ -9,8 +7,6 @@ const Header = ({ size = 'base' as 'sm' | 'base' | 'lg', fullWidth = false }) =>
     lg: 'px-6 py-3 text-lg',
   }
   const { user } = usePage().props
-
-  const [openSettings, setOpenSettings] = useState<boolean>(false)
 
   return (
     <>
@@ -21,7 +17,7 @@ const Header = ({ size = 'base' as 'sm' | 'base' | 'lg', fullWidth = false }) =>
               Dashboard
             </Link>
             <button
-              onClick={() => setOpenSettings(true)}
+              onClick={() => router.visit('/settings')}
               className="w-fit justify-self-end inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
               <svg
@@ -96,7 +92,6 @@ const Header = ({ size = 'base' as 'sm' | 'base' | 'lg', fullWidth = false }) =>
           {user ? 'Logout' : 'Login'}
         </Link>
       </header>
-      {openSettings ? <SettingsModal setOpen={setOpenSettings} /> : null}
     </>
   )
 }

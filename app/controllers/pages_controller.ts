@@ -5,6 +5,7 @@ import drive from '@adonisjs/drive/services/main'
 import { FilesType } from '../types/files.type.js'
 import { DriveDirectory, DriveFile } from '@adonisjs/drive'
 import fs from 'node:fs'
+import FolderPermission from '#models/folder_permission'
 
 export default class PagesController {
   async dashboard(ctx: HttpContext) {
@@ -83,6 +84,19 @@ export default class PagesController {
     return ctx.inertia.render('users', {
       users,
       errors: ctx.session.flashMessages.get('errors'),
+    })
+  }
+
+  async settings(ctx: HttpContext) {
+    if (!(await ctx.bouncer.allows(adminUsage))) {
+      return ctx.response.redirect().toRoute('dashboard')
+    }
+
+    const folderPermissions = await FolderPermission.query().select('*')
+
+    return ctx.inertia.render('settings', {
+      errors: ctx.session.flashMessages.get('errors'),
+      folderPermissions,
     })
   }
 }

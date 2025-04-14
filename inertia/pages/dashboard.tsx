@@ -1,19 +1,9 @@
 import User from '#models/user'
-import {
-  FiFile,
-  FiFolder,
-  FiSearch,
-  FiUser,
-  FiChevronRight,
-  FiHome,
-  FiPlus,
-  FiUpload,
-} from 'react-icons/fi'
+import { FiSearch, FiUser, FiChevronRight, FiHome, FiPlus, FiUpload } from 'react-icons/fi'
 import Layout from './layout'
 import { ReactNode, useState } from 'react'
-import { Link, router } from '@inertiajs/react'
+import { Link } from '@inertiajs/react'
 import { FilesType } from '../../app/types/files.type'
-import AddPath from '@components/add_path'
 import FileExplore from '@components/file_explore'
 import EditFile from '@components/edit_file'
 
@@ -106,20 +96,24 @@ const Dashboard = ({
         </nav>
 
         <div className="flex gap-2">
-          <button
-            onClick={() => setNewPath('file')}
-            className="flex items-center px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-          >
-            <FiUpload className="mr-2" />
-            <span>Add File</span>
-          </button>
-          <button
-            onClick={() => setNewPath('folder')}
-            className="flex items-center px-3 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-          >
-            <FiPlus className="mr-2" />
-            <span>Add Folder</span>
-          </button>
+          {files ? (
+            <>
+              <button
+                onClick={() => setNewPath('file')}
+                className="flex items-center px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              >
+                <FiUpload className="mr-2" />
+                <span>Add File</span>
+              </button>
+              <button
+                onClick={() => setNewPath('folder')}
+                className="flex items-center px-3 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+              >
+                <FiPlus className="mr-2" />
+                <span>Add Folder</span>
+              </button>
+            </>
+          ) : null}
         </div>
       </div>
       {files ? (

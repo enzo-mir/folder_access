@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, hasOne } from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
 import Role from './role.js'
-import type { HasOne } from '@adonisjs/lucid/types/relations'
+import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 
 export default class FolderPermission extends BaseModel {
   @column({ isPrimary: true })
@@ -10,10 +10,14 @@ export default class FolderPermission extends BaseModel {
   @column()
   declare path: string
 
-  @hasOne(() => Role, {
-    foreignKey: 'role',
+  @column()
+  declare permission: string
+
+  @belongsTo(() => Role, {
+    foreignKey: 'permission',
+    localKey: 'role',
   })
-  declare permission: HasOne<typeof Role>
+  declare role: BelongsTo<typeof Role>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

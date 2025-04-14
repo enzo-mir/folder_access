@@ -9,14 +9,16 @@ export default class extends BaseSchema {
       table.increments('id').notNullable()
       table.string('username', 254).notNullable().unique()
       table.string('code').notNullable()
-      table.string('role').notNullable()
+      table
+        .string('role')
+        .notNullable()
+        .references('roles.role')
+        .onDelete('CASCADE')
+        .onUpdate('CASCADE')
       table.timestamp('created_at').notNullable()
       table.timestamp('updated_at').nullable()
     })
 
-    this.schema.alterTable(this.tableName, (table) => {
-      table.foreign('role').references('roles.role').onDelete('CASCADE')
-    })
     this.defer(async (db) => {
       await db.table(this.tableName).insert({
         username: 'admin',

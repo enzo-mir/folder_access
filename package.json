@@ -30,7 +30,7 @@
     "#tests/*": "./tests/*.js",
     "#start/*": "./start/*.js",
     "#config/*": "./config/*.js",
-    "#validator/*": "./validator/*.js"
+    "#validator/*": "./app/validator/*.js"
   },
   "devDependencies": {
     "@adonisjs/assembler": "^7.8.2",
