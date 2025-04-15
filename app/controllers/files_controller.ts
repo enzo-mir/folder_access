@@ -33,23 +33,17 @@ export default class FilesController {
 
     const entries = await disk.listAll(`/${dirPath}`)
 
-    let pathToSearch: string | string[] = pathName
-    if (pathName.includes('/')) {
-      const newPath = pathName.split('/')
-      newPath.shift()
-      pathToSearch = newPath
-    }
-
     for (const entry of entries.objects) {
       if (entry.isDirectory) {
         const fullPath = path.join(dirPath, entry.name)
         const normalizedPath = fullPath.replaceAll(/\\/g, '/')
 
-        const entryNameLower = entry.name.toLowerCase()
-        const pathNameLower =
-          typeof pathToSearch === 'string' ? pathToSearch.toLowerCase() : pathToSearch
+        const entryNameLower = normalizedPath.toLowerCase()
+        const pathNameLower = pathName.toLowerCase()
 
-        if (entryNameLower.startsWith(pathNameLower as string)) {
+        console.log(pathNameLower)
+
+        if (entryNameLower.includes(pathNameLower)) {
           folders.push({
             name: entry.name,
             path: normalizedPath,

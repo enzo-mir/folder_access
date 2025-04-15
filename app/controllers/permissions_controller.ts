@@ -2,14 +2,29 @@ import FolderPermission from '#models/folder_permission'
 import type { HttpContext } from '@adonisjs/core/http'
 import { createPermissionSchema, deletePermissionSchema } from '#validator/permission.schema'
 import { ZodError } from 'zod'
-import fs from 'node:fs/promises'
+import fs from 'node:fs'
 
 export default class PermissionsController {
   async create(ctx: HttpContext) {
     try {
       const payload = await createPermissionSchema.parseAsync(ctx.request.all())
-      if (!(await fs.readdir(`storage/${payload.path}`))) {
-        ctx.session.flash('errors', "The folder doesn't exist")
+
+      await new Promise((resolve, reject) => {
+        fs.readdir(`storage/${payload.path}`, (err) => {
+          if (err) {
+            reject({
+              message: "The folder doesn't exist",
+              code: 'ENOENT',
+            })
+          } else {
+            resolve(null)
+          }
+        })
+      })
+
+      if (payload.path === '') {
+        ctx.session.flash('errors', 'The root folder cannot be modified')
+        return ctx.response.redirect().back()
       }
       await FolderPermission.create(payload)
 
@@ -23,8 +38,10 @@ export default class PermissionsController {
       }
       if (error instanceof ZodError) {
         ctx.session.flash('errors', error.issues[0].message)
+      } else if ('code' in error && error.code === 'ENOENT') {
+        ctx.session.flash('errors', error.message)
       } else {
-        ctx.session.flash('errors', { message: 'An unexpected error occurred' })
+        ctx.session.flash('errors', 'An unexpected error occurred')
       }
       return ctx.response.redirect().back()
     }

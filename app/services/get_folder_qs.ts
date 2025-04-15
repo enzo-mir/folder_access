@@ -26,10 +26,11 @@ async function getFilesList(ctx: HttpContext, folderPath: string, allFiles: Obje
   if ('objects' in allFiles) {
     for (const item of allFiles.objects as Iterable<DriveFile | DriveDirectory>) {
       const fullPath = folderPath !== '' ? `${folderPath}/${item.name}` : item.name
+
       const access = await ctx.bouncer.allows(getAccessFolders, fullPath)
-      if (!access) {
-        continue
-      }
+
+      if (!access) continue
+
       if (item.isFile) {
         const metadata = await item.getMetaData()
         files.push({

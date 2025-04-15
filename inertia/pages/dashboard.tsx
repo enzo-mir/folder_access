@@ -1,5 +1,5 @@
 import User from '#models/user'
-import { FiSearch, FiUser, FiChevronRight, FiHome, FiPlus, FiUpload } from 'react-icons/fi'
+import { FiSearch, FiUser, FiChevronRight, FiHome, FiPlus, FiUpload, FiUserCheck } from 'react-icons/fi'
 import Layout from './layout'
 import { ReactNode, useState } from 'react'
 import { Link } from '@inertiajs/react'
@@ -12,11 +12,13 @@ const Dashboard = ({
   files,
   currentPath,
   content,
+  isAdmin,
 }: {
   currentPath: string
   user: User
   files?: FilesType
   content?: string
+  isAdmin?: boolean
 }) => {
   const [newPath, setNewPath] = useState<'file' | 'folder' | null>(null)
 
@@ -37,17 +39,6 @@ const Dashboard = ({
       </header>
 
       <section className="grid grid-cols-1 lg:grid-cols-8 gap-6 mb-8">
-        <div className="lg:col-span-5 bg-white rounded-lg shadow-sm p-4">
-          <div className="flex items-center">
-            <FiSearch className="text-gray-400 mr-2" />
-            <input
-              type="text"
-              placeholder="Search files and folders..."
-              className="w-full outline-none text-gray-700"
-            />
-          </div>
-        </div>
-
         <div className="bg-white lg:col-span-2 rounded-lg shadow-sm p-4 flex items-center">
           <div className="bg-blue-100 p-2 rounded-full mr-3">
             <FiUser className="text-blue-600" />
@@ -57,14 +48,17 @@ const Dashboard = ({
             <p className="text-sm text-gray-500">role : {user.role}</p>
           </div>
         </div>
-        <Link
-          href={'/users'}
-          className="bg-indigo-700 hover:pointer text-white rounded-lg shadow-sm p-4 flex items-center"
-        >
-          <div>
-            <p className="font-medium">All users</p>
-          </div>
-        </Link>
+        {isAdmin ? (
+          <Link
+            href={'/users'}
+            className="bg-indigo-700 hover:pointer text-white rounded-lg h-fit w-fit self-end shadow-sm p-4 flex items-center"
+          >
+            <div className="flex gap-2 items-center">
+              <FiUserCheck className="text-white" />
+              <p className="font-medium">All users</p>
+            </div>
+          </Link>
+        ) : null}
       </section>
 
       <div className="mb-6 flex flex-col sm:flex-row justify-between gap-4 bg-white rounded-lg shadow-sm p-4">

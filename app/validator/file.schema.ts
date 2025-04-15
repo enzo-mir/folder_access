@@ -43,10 +43,8 @@ export const editFileSchema = z.object({
 })
 
 export const searchFileSchema = z.object({
-  path: z.string().min(1, 'Path cannot be empty'),
-  /*  .transform((val) => {
-      const v = val.split('/')
-      v.shift()
-      return v
-    }), */
+  path: z
+    .string()
+    .min(1, 'Path cannot be empty')
+    .transform((val) => val.trim().replace(/^\/+/, '')),
 })

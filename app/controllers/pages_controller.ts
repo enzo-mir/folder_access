@@ -11,7 +11,10 @@ export default class PagesController {
   async dashboard(ctx: HttpContext) {
     const folderPath = ctx.params.folder ? decodeURIComponent(ctx.params.folder) : ''
 
-    if (await ctx.bouncer.denies(getAccessFolders, folderPath)) {
+    if (
+      (await ctx.bouncer.denies(getAccessFolders, folderPath)) &&
+      ctx.request.url() !== '/dashboard'
+    ) {
       return ctx.response.redirect().toRoute('dashboard')
     }
 
