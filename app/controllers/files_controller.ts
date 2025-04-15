@@ -30,7 +30,8 @@ export default class FilesController {
     folders?: { name: string; path: string }[]
   }): Promise<{ name: string; path: string }[]> {
     const disk = drive.use()
-    const entries = await disk.listAll(dirPath)
+
+    const entries = await disk.listAll(`/${dirPath}`)
 
     let pathToSearch: string | string[] = pathName
     if (pathName.includes('/')) {
@@ -42,7 +43,7 @@ export default class FilesController {
     for (const entry of entries.objects) {
       if (entry.isDirectory) {
         const fullPath = path.join(dirPath, entry.name)
-        const normalizedPath = fullPath.replace(/\\/g, '/')
+        const normalizedPath = fullPath.replaceAll(/\\/g, '/')
 
         const entryNameLower = entry.name.toLowerCase()
         const pathNameLower =

@@ -4,7 +4,7 @@ import User from '#models/user'
 import { ZodError } from 'zod'
 import { createRoleSchema, deletRoleSchema, updateRoleSchema } from '../validator/role.schema.js'
 import Role from '#models/role'
-import { adminUsage } from '#abilities/users_page'
+import { adminUsage } from '#abilities/admin_content'
 import { sendCreds } from '../mail/create_user_mail.js'
 
 export default class SettingsController {
@@ -17,10 +17,10 @@ export default class SettingsController {
     }
   }
 
-  public higherRole = async ({ isMin }: { isMin?: boolean }) => {
+  public higherRole = async ({ adminContain }: { adminContain?: boolean }) => {
     const roles = await Role.query().select('level', 'id').orderBy('level', 'desc')
 
-    return roles[isMin ? 0 : 1]
+    return roles[adminContain ? 0 : 1]
   }
 
   async createUser(ctx: HttpContext) {
@@ -79,11 +79,18 @@ export default class SettingsController {
 
     try {
       const payload = await createRoleSchema.parseAsync(ctx.request.body())
+
+      const higherLevel = await this.higherRole({ adminContain: true })
+      if (payload.level >= higherLevel!.level) {
+        ctx.session.flash({
+          errors: `The level access must be lower than ${higherLevel!.level} `,
+        })
+        return ctx.response.redirect().back()
+      }
+
       await Role.create(payload)
       return ctx.response.redirect().back()
     } catch (error) {
-      console.log(error)
-
       if ('code' in error) {
         if (error.code === 'ER_DUP_ENTRY') {
           ctx.session.flash({
@@ -122,7 +129,7 @@ export default class SettingsController {
 
       if (ctx.auth?.user?.role !== payload.role) {
         const higherLevel = await this.higherRole({
-          isMin: true,
+          adminContain: true,
         })
 
         if (payload.level >= higherLevel!.level) {
@@ -136,7 +143,7 @@ export default class SettingsController {
         }
         return ctx.response.redirect().back()
       } else {
-        const higherLevel = await this.higherRole({ isMin: false })
+        const higherLevel = await this.higherRole({ adminContain: false })
         if (higherLevel!.level >= payload.level) {
           ctx.session.flash({
             errors: `The level access must be higher than ${higherLevel!.level}`,

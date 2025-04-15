@@ -43,9 +43,7 @@ const Users = ({
   const totalPages = Math.ceil(filteredUsers.length / usersPerPage)
 
   const formatDate = (dateString: DateTime<boolean>) => {
-    const date = new Date(dateString as unknown as Date).toLocaleDateString()
-
-    return date
+    return new Date(dateString as unknown as Date).toLocaleDateString()
   }
 
   const handleDeleteUser = (id: number) => {

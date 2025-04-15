@@ -101,7 +101,7 @@ const AddUserModal = ({
               className="block w-full p-1 rounded-md border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
             >
               {roles.map((role) => (
-                <option key={role.id} value={role.level}>
+                <option key={role.id} value={role.role}>
                   {role.role}
                 </option>
               ))}

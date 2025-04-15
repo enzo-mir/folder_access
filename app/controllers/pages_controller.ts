@@ -1,68 +1,30 @@
-import { adminUsage } from '#abilities/users_page'
+import { adminUsage } from '#abilities/admin_content'
 import User from '#models/user'
 import type { HttpContext } from '@adonisjs/core/http'
 import drive from '@adonisjs/drive/services/main'
-import { FilesType } from '../types/files.type.js'
-import { DriveDirectory, DriveFile } from '@adonisjs/drive'
 import fs from 'node:fs'
-import FolderPermission from '#models/folder_permission'
+import { getFiles } from '#services/get_folder_qs'
+import { permissionsByRole } from '#services/get_permissions'
+import { getAccessFolders } from '#abilities/fetch_folders'
 
 export default class PagesController {
   async dashboard(ctx: HttpContext) {
     const folderPath = ctx.params.folder ? decodeURIComponent(ctx.params.folder) : ''
+
+    if (await ctx.bouncer.denies(getAccessFolders, folderPath)) {
+      return ctx.response.redirect().toRoute('dashboard')
+    }
+
     const disk = drive.use()
+    const files = await getFiles(ctx, folderPath, disk)
+    const content = files ? undefined : fs.readFileSync(`storage/${folderPath}`, 'utf-8')
 
-    const getFiles = async () => {
-      if (folderPath === '') {
-        return await disk.listAll()
-      }
-      return disk
-        .exists(folderPath)
-        .then(async () => {
-          return await disk.listAll(folderPath)
-        })
-        .catch(() => {
-          return {}
-        })
-    }
-
-    const response = await getFiles()
-    const files: FilesType = []
-
-    if ('objects' in response) {
-      for (const item of response.objects as Iterable<DriveFile | DriveDirectory>) {
-        if (item.isFile) {
-          const metadata = await item.getMetaData()
-          files.push({
-            name: item.name,
-            modified_at: metadata.lastModified,
-            size: metadata.contentLength,
-            type: 'file',
-          })
-        } else {
-          files.push({
-            name: item.name,
-            modified_at: null,
-            size: null,
-            type: 'folder',
-          })
-        }
-      }
-
-      return ctx.inertia.render('dashboard', {
-        errors: ctx.session.flashMessages.get('errors'),
-        files,
-        currentPath: folderPath,
-      })
-    } else {
-      const content = fs.readFileSync(`storage/${folderPath}`, 'utf-8')
-
-      return ctx.inertia.render('dashboard', {
-        errors: ctx.session.flashMessages.get('errors'),
-        content,
-        currentPath: folderPath,
-      })
-    }
+    return ctx.inertia.render('dashboard', {
+      errors: ctx.session.flashMessages.get('errors'),
+      files,
+      content,
+      currentPath: folderPath,
+    })
   }
 
   async login(ctx: HttpContext) {
@@ -91,29 +53,11 @@ export default class PagesController {
     if (await ctx.bouncer.denies(adminUsage)) {
       return ctx.response.redirect().toRoute('dashboard')
     }
-
-    const folderPermissions = await FolderPermission.query().select('*')
-
-    const permissionsByRole = folderPermissions.reduce<
-      Record<string, Array<{ id: number; path: string }>>
-    >((acc, permission) => {
-      const role = permission.permission
-
-      if (!acc[role]) {
-        acc[role] = []
-      }
-
-      acc[role].push({
-        id: permission.id,
-        path: permission.path,
-      })
-
-      return acc
-    }, {})
+    const folderPermissions = await permissionsByRole()
 
     return ctx.inertia.render('settings', {
       errors: ctx.session.flashMessages.get('errors'),
-      folderPermissions: permissionsByRole,
+      folderPermissions,
     })
   }
 }
