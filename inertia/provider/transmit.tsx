@@ -4,7 +4,7 @@ let transmit: Transmit | null = null
 
 if (typeof window !== 'undefined') {
   transmit = new Transmit({
-    baseUrl: import.meta.env.DEV ? 'http://localhost:3000' : window.location.origin,
+    baseUrl: window.location.origin,
   })
 }
 

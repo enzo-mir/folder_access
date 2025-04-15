@@ -1,4 +1,4 @@
-import Role from '#models/role'
+import { getAllRoles, getHigherLevelAccess } from '#services/get_higher_level_access'
 import { defineConfig } from '@adonisjs/inertia'
 import type { InferSharedProps } from '@adonisjs/inertia/types'
 
@@ -14,10 +14,12 @@ const inertiaConfig = defineConfig({
   sharedData: {
     user: (ctx) => ctx.inertia.always(() => ctx.auth.user),
     roles: (ctx) =>
-      ctx.inertia.always(
-        async () =>
-          ctx.auth.user?.role === 'admin' && (await Role.query().select('*').orderBy('level'))
-      ),
+      ctx.inertia.always(async () => {
+        const highestRole = await getHigherLevelAccess()
+        if (highestRole?.role === ctx.auth.user?.role) {
+          return await getAllRoles()
+        }
+      }),
   },
 
   /**

@@ -16,7 +16,7 @@ const Settings = ({
   roles: Role[]
   user: User
 }) => {
-  const [activeTab, setActiveTab] = useState<'roles' | 'permissions'>('permissions')
+  const [activeTab, setActiveTab] = useState<'roles' | 'permissions'>('roles')
 
   return (
     <div className="bg-white min-h-screen p-6">

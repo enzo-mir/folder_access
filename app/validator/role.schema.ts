@@ -5,6 +5,10 @@ export const createRoleSchema = z.object({
   level: z.number().min(0),
 })
 
+export const updateRoleSchema = createRoleSchema.extend({
+  id: z.number(),
+})
+
 export const deletRoleSchema = z.object({
   id: z.number(),
 })

@@ -12,6 +12,7 @@
 |
 */
 
+import Role from '#models/role'
 import User from '#models/user'
 import { Bouncer } from '@adonisjs/bouncer'
 
@@ -19,6 +20,7 @@ import { Bouncer } from '@adonisjs/bouncer'
  * Delete the following ability to start from
  * scratch
  */
-export const adminUsage = Bouncer.ability((user: User) => {
-  return user.role === 'admin'
+export const adminUsage = Bouncer.ability(async (user: User) => {
+  const higherRole = await Role.query().select('role').orderBy('level', 'desc').first()
+  return user.role === higherRole?.role
 })

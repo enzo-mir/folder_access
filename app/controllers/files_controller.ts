@@ -11,14 +11,13 @@ export default class FilesController {
     const disk = drive.use()
 
     let exists: boolean = false
-
     if (fileName) {
       exists = await disk.exists(`${folderPath}/${fileName || direName}`)
+      return exists
     } else if (direName) {
       exists = fs.existsSync(`storage/${folderPath}/${direName}`)
+      return exists
     }
-
-    return exists
   }
 
   private async listFoldersRecursively({
@@ -29,7 +28,7 @@ export default class FilesController {
     dirPath: string
     pathName: string
     folders?: { name: string; path: string }[]
-  }): Promise<void> {
+  }): Promise<{ name: string; path: string }[]> {
     const disk = drive.use()
     const entries = await disk.listAll(dirPath)
 
@@ -67,6 +66,8 @@ export default class FilesController {
     transmit.broadcast('folders', {
       folders,
     })
+
+    return folders
   }
 
   async create(ctx: HttpContext) {
@@ -76,16 +77,19 @@ export default class FilesController {
     try {
       const { fileName, direName } = await addFileSchema.parseAsync(ctx.request.all())
 
-      if (await this.getSamePath(folderPath, fileName, direName)) {
+      const isSamePath = await this.getSamePath(folderPath, direName, fileName)
+
+      if (isSamePath) {
         ctx.session.flash({ errors: `${fileName ? 'File' : 'Folder'} already exists` })
         return ctx.response.redirect().back()
+      } else {
+        if (fileName) {
+          await disk.put(`${folderPath}/${fileName}`, '')
+        } else if (direName) {
+          await fs.promises.mkdir(`storage/${folderPath}/${direName}`, { recursive: true })
+        }
+        return ctx.response.redirect().back()
       }
-      if (fileName) {
-        await disk.put(`${folderPath}/${fileName}`, '')
-      } else if (direName) {
-        await fs.promises.mkdir(`storage/${folderPath}/${direName}`, { recursive: true })
-      }
-      return ctx.response.redirect().back()
     } catch (error) {
       if (error instanceof z.ZodError) {
         ctx.session.flash({ errors: error.issues[0].message })
@@ -129,8 +133,11 @@ export default class FilesController {
 
       return ctx.response.redirect().back()
     } catch (error) {
-      console.log(error)
-
+      if (error instanceof z.ZodError) {
+        ctx.session.flash({ errors: error.issues[0].message })
+      } else {
+        ctx.session.flash({ errors: 'No folder' })
+      }
       return ctx.response.redirect().back()
     }
   }

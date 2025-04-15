@@ -2,7 +2,7 @@ import { type HttpContext } from '@adonisjs/core/http'
 import { createUserSchema, deleteUserSchema } from '../validator/user.schema.js'
 import User from '#models/user'
 import { ZodError } from 'zod'
-import { createRoleSchema, deletRoleSchema } from '../validator/role.schema.js'
+import { createRoleSchema, deletRoleSchema, updateRoleSchema } from '../validator/role.schema.js'
 import Role from '#models/role'
 import { adminUsage } from '#abilities/users_page'
 import { sendCreds } from '../mail/create_user_mail.js'
@@ -15,6 +15,12 @@ export default class SettingsController {
       })
       return ctx.response.redirect().back()
     }
+  }
+
+  public higherRole = async ({ isMin }: { isMin?: boolean }) => {
+    const roles = await Role.query().select('level', 'id').orderBy('level', 'desc')
+
+    return roles[isMin ? 0 : 1]
   }
 
   async createUser(ctx: HttpContext) {
@@ -104,6 +110,61 @@ export default class SettingsController {
       ctx.session.flash({
         errors: 'An error as occurred durring the delete of role',
       })
+      return ctx.response.redirect().back()
+    }
+  }
+
+  async updateRole(ctx: HttpContext) {
+    await this.bouncer(ctx, "You don't have the access rights to update a role")
+
+    try {
+      const payload = await updateRoleSchema.parseAsync(ctx.request.all())
+
+      if (ctx.auth?.user?.role !== payload.role) {
+        const higherLevel = await this.higherRole({
+          isMin: true,
+        })
+
+        if (payload.level >= higherLevel!.level) {
+          ctx.session.flash({
+            errors: `The level access must be lower than ${higherLevel!.level} `,
+          })
+        } else {
+          await Role.query()
+            .update({ role: payload.role, level: payload.level })
+            .where({ id: payload.id })
+        }
+        return ctx.response.redirect().back()
+      } else {
+        const higherLevel = await this.higherRole({ isMin: false })
+        if (higherLevel!.level >= payload.level) {
+          ctx.session.flash({
+            errors: `The level access must be higher than ${higherLevel!.level}`,
+          })
+        } else {
+          await Role.query()
+            .update({ role: payload.role, level: payload.level })
+            .where({ id: payload.id })
+        }
+        return ctx.response.redirect().back()
+      }
+    } catch (error) {
+      if (error instanceof ZodError) {
+        ctx.session.flash({
+          errors: 'An error as occurred with the information given',
+        })
+      }
+      if ('code' in error) {
+        if (error.code === 'ER_DUP_ENTRY') {
+          ctx.session.flash({
+            errors: 'Role must be unique',
+          })
+        }
+      } else {
+        ctx.session.flash({
+          errors: 'An error as occurred durring the update of role',
+        })
+      }
       return ctx.response.redirect().back()
     }
   }

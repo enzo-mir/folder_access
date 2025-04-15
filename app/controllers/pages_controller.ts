@@ -75,7 +75,7 @@ export default class PagesController {
   }
 
   async users(ctx: HttpContext) {
-    if (!(await ctx.bouncer.allows(adminUsage))) {
+    if (await ctx.bouncer.denies(adminUsage)) {
       return ctx.response.redirect().toRoute('dashboard')
     }
 
@@ -88,11 +88,11 @@ export default class PagesController {
   }
 
   async settings(ctx: HttpContext) {
-    if (!(await ctx.bouncer.allows(adminUsage))) {
+    if (await ctx.bouncer.denies(adminUsage)) {
       return ctx.response.redirect().toRoute('dashboard')
     }
 
-    const folderPermissions = await FolderPermission.query().select('*').orderBy('id')
+    const folderPermissions = await FolderPermission.query().select('*')
 
     const permissionsByRole = folderPermissions.reduce<
       Record<string, Array<{ id: number; path: string }>>
