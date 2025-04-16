@@ -11,7 +11,7 @@ const redisConfig = defineConfig({
       port: env.get('REDIS_PORT'),
       password: env.get('REDIS_PASSWORD', ''),
       db: 0,
-      keyPrefix: 'folder_access',
+      keyPrefix: 'folder_access:',
       retryStrategy(times) {
         return times > 10 ? null : times * 50
       },

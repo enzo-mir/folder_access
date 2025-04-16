@@ -25,3 +25,5 @@ yarn-error.log
 ./storage
 storage/*
 storage
+
+./dump.rdb

@@ -8,6 +8,12 @@ import { permissionsByRole } from '#services/get_permissions'
 import { getAccessFolders } from '#abilities/fetch_folders'
 
 export default class PagesController {
+  private async getContent(ctx: HttpContext, folderPath: string) {
+    const disk = drive.use()
+    const files = await getFiles(ctx, folderPath, disk)
+    const content = files ? undefined : fs.readFileSync(`storage/${folderPath}`, 'utf-8')
+    return { content, files }
+  }
   async dashboard(ctx: HttpContext) {
     const folderPath = ctx.params.folder ? decodeURIComponent(ctx.params.folder) : ''
 
@@ -18,9 +24,7 @@ export default class PagesController {
       return ctx.response.redirect().toRoute('dashboard')
     }
 
-    const disk = drive.use()
-    const files = await getFiles(ctx, folderPath, disk)
-    const content = files ? undefined : fs.readFileSync(`storage/${folderPath}`, 'utf-8')
+    const { content, files } = await this.getContent(ctx, folderPath)
 
     return ctx.inertia.render('dashboard', {
       errors: ctx.session.flashMessages.get('errors'),
@@ -40,9 +44,7 @@ export default class PagesController {
   }
 
   async users(ctx: HttpContext) {
-    if (await ctx.bouncer.denies(adminUsage)) {
-      return ctx.response.redirect().toRoute('dashboard')
-    }
+    if (await ctx.bouncer.denies(adminUsage)) return ctx.response.redirect().toRoute('dashboard')
 
     const users = await User.query().select('id', 'username', 'role', 'created_at')
 
