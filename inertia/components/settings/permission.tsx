@@ -17,7 +17,6 @@ const FolderPermissionComponent = ({
   folderPermissions?: FolderPermissionType
   roles: { id: number; role: string }[]
 }) => {
-
   const [selectedRoleForPermission, setSelectedRoleForPermission] = useState(roles[0]?.role || '')
   const { data, setData, post } = useForm({
     path: '',

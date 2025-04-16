@@ -1,12 +1,5 @@
 import User from '#models/user'
-import {
-  FiUser,
-  FiChevronRight,
-  FiHome,
-  FiPlus,
-  FiUpload,
-  FiUserCheck,
-} from 'react-icons/fi'
+import { FiUser, FiChevronRight, FiHome, FiPlus, FiUpload, FiUserCheck } from 'react-icons/fi'
 import Layout from './layout'
 import { ReactNode, useState } from 'react'
 import { Link } from '@inertiajs/react'

@@ -4,9 +4,7 @@ import Layout from './layout'
 const File = ({ content }: { content: string }) => {
   return (
     <main className="h-[100%] bg-gray-50 p-6">
-      <section>
-        
-      </section>
+      <section></section>
     </main>
   )
 }

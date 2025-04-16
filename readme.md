@@ -50,6 +50,8 @@ _A secure access control system built with **AdonisJS, Inertia.js, React, and Ta
 
 ### Tree
 
+```
+
 folder_access
 ├── .editorconfig
 ├── .env
@@ -184,7 +186,4 @@ folder_access
 │ └── bootstrap.ts
 ├── tsconfig.json
 └── vite.config.ts
-
-```
-
 ```
