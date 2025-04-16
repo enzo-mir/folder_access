@@ -1,15 +1,23 @@
-import { useForm } from '@inertiajs/react'
+import { router, useForm } from '@inertiajs/react'
 import { ChangeEvent, FormEvent } from 'react'
 import { FiX, FiUser, FiRefreshCw } from 'react-icons/fi'
 import Role from '#models/role'
 import { toast } from 'react-toastify'
 
-const AddUserModal = ({
+const ManageUserModal = ({
   setOpen,
+  open,
   roles,
+  defaultValues,
 }: {
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  setOpen: React.Dispatch<React.SetStateAction<{ open: boolean; isEditing?: boolean }>>
+  open: { open: boolean; isEditing?: boolean }
   roles: Role[]
+  defaultValues?: {
+    id: number
+    username: string
+    role: string
+  }
 }) => {
   const generateRandomCode = () => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789/:;.,<>?'
@@ -20,24 +28,31 @@ const AddUserModal = ({
     return result.trim()
   }
 
-  const { processing, post, data, setData, reset } = useForm<{
+  const { processing, data, setData, reset } = useForm<{
     username: string
     role: string
     code: string
     email?: string
   }>({
-    username: '',
-    role: roles[0].role,
+    username: defaultValues?.username || '',
+    role: defaultValues?.role || roles[0].role,
     code: generateRandomCode(),
   })
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
 
-    post('/user', {
+    router.visit('/user', {
+      method: open.isEditing ? 'put' : 'post',
+      data: {
+        ...data,
+        id: defaultValues?.id,
+      },
       onSuccess: () => {
         toast.success('User created')
-        setOpen(false)
+        setOpen({
+          open: false,
+        })
       },
       onError: (err) => {
         toast.error(typeof err === 'string' ? err : 'An error as occurred')
@@ -59,9 +74,16 @@ const AddUserModal = ({
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
         <div className="flex justify-between items-center border-b p-4">
           <h3 className="text-lg font-semibold text-gray-800 flex items-center">
-            <FiUser className="mr-2" /> Add New User
+            <FiUser className="mr-2" /> {open.isEditing ? 'Edit User' : 'Add New User'}
           </h3>
-          <button onClick={() => setOpen(false)} className="text-gray-500 hover:text-gray-700">
+          <button
+            onClick={() =>
+              setOpen({
+                open: false,
+              })
+            }
+            className="text-gray-500 hover:text-gray-700"
+          >
             <FiX size={20} />
           </button>
         </div>
@@ -82,7 +104,7 @@ const AddUserModal = ({
                 autoComplete="name"
                 value={data.username}
                 onChange={handleChange}
-                className={`pl-10 pb-2 block w-full rounded-md border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500`}
+                className={`pl-10 py-1 block w-full rounded-md border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500`}
                 required
               />
             </div>
@@ -109,34 +131,39 @@ const AddUserModal = ({
           </div>
 
           <div className="mb-6">
-            <label htmlFor="code" className="block text-sm font-medium text-gray-700 mb-1">
-              Access Code
-            </label>
-            <div className="flex gap-2">
-              <div className="relative flex-grow">
-                <input
-                  type="text"
-                  id="code"
-                  name="code"
-                  value={data.code}
-                  onChange={handleChange}
-                  required
-                  className={`block w-full h-full rounded-md border p-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500`}
-                  readOnly={true}
-                />
-              </div>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setData((prev) => ({ ...prev, code: generateRandomCode() }))
-                  }}
-                  className="px-3 py-2 rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 flex items-center"
-                >
-                  <FiRefreshCw className="mr-1" /> Generate
-                </button>
-              </div>
-            </div>
+            {!open.isEditing ? (
+              <>
+                <label htmlFor="code" className="block text-sm font-medium text-gray-700 mb-1">
+                  Access Code
+                </label>
+                <div className="flex gap-2">
+                  <div className="relative flex-grow">
+                    <input
+                      type="text"
+                      id="code"
+                      name="code"
+                      value={data.code}
+                      onChange={handleChange}
+                      required
+                      className={`block w-full h-full rounded-md border p-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500`}
+                      readOnly={true}
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setData((prev) => ({ ...prev, code: generateRandomCode() }))
+                      }}
+                      className="px-3 py-2 rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 flex items-center"
+                    >
+                      <FiRefreshCw className="mr-1" /> Generate
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : null}
+
             <div className="flex flex-col mt-6">
               <label htmlFor="email">
                 Email to send<span className="text-sm"> (optional)</span>
@@ -200,4 +227,4 @@ const AddUserModal = ({
   )
 }
 
-export default AddUserModal
+export default ManageUserModal

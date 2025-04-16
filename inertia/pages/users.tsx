@@ -1,6 +1,6 @@
 import Role from '#models/role'
 import User from '#models/user'
-import AddUserModal from '@components/add_user'
+import ManageUserModal from '@components/manage_user'
 import { router } from '@inertiajs/react'
 import { DateTime } from 'luxon'
 import { ReactNode, useState } from 'react'
@@ -12,7 +12,6 @@ import {
   FiPlus,
   FiChevronLeft,
   FiChevronRight,
-  FiFilter,
 } from 'react-icons/fi'
 import { toast } from 'react-toastify'
 import Layout from './layout'
@@ -28,7 +27,18 @@ const Users = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState<{
+    open: boolean
+    isEditing?: boolean
+  }>({
+    open: false,
+  })
+  const [userToEdit, setUserToEdit] = useState<{
+    id: number
+    username: string
+    role: string
+  }>()
+
   const usersPerPage = 5
 
   const filteredUsers = users.filter(
@@ -47,9 +57,11 @@ const Users = ({
   }
 
   const handleDeleteUser = (id: number) => {
+    if (!confirm('Are you sure you want to delete this user?')) return
     router.delete('/user', {
       data: { id },
       onSuccess: () => {
+        currentUsers.length === 1 && setCurrentPage((prev) => Math.max(prev - 1, 1))
         toast.success('User deleted !')
       },
       onError: (e) => {
@@ -60,7 +72,14 @@ const Users = ({
 
   return (
     <>
-      {isAddModalOpen ? <AddUserModal setOpen={setIsAddModalOpen} roles={roles} /> : null}
+      {isModalOpen.open ? (
+        <ManageUserModal
+          defaultValues={userToEdit}
+          open={isModalOpen}
+          setOpen={setIsModalOpen}
+          roles={roles}
+        />
+      ) : null}
       <main className="container mx-auto h[100%] px-4 py-8">
         <header className="mb-8">
           <h1 className="text-3xl font-bold text-gray-800 flex items-center">
@@ -84,11 +103,13 @@ const Users = ({
           </div>
 
           <div className="flex gap-3">
-            <button className="flex items-center px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 hover:bg-gray-50">
-              <FiFilter className="mr-2" /> Filter
-            </button>
             <button
-              onClick={() => setIsAddModalOpen(true)}
+              onClick={() =>
+                setIsModalOpen({
+                  open: true,
+                  isEditing: false,
+                })
+              }
               className="flex items-center px-4 py-2 border border-transparent rounded-lg bg-blue-600 text-white hover:bg-blue-700"
             >
               <FiPlus className="mr-2" /> Add User
@@ -161,13 +182,22 @@ const Users = ({
                         <>{formatDate(user.createdAt)}</>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        {user.id === userLogged.id ? (
-                          <button className="text-blue-600 hover:text-blue-900 mr-4">
-                            <FiEdit2 className="inline mr-1" /> Edit
-                          </button>
-                        ) : (
+                        {user.id === userLogged.id || user.role === userLogged.role ? null : (
                           <>
-                            <button className="text-blue-600 hover:text-blue-900 mr-4">
+                            <button
+                              onClick={() => {
+                                setUserToEdit({
+                                  id: user.id,
+                                  username: user.username,
+                                  role: user.role,
+                                })
+                                setIsModalOpen({
+                                  open: true,
+                                  isEditing: true,
+                                })
+                              }}
+                              className="text-blue-600 hover:text-blue-900 mr-4"
+                            >
                               <FiEdit2 className="inline mr-1" /> Edit
                             </button>
                             <button

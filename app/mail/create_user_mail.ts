@@ -2,13 +2,15 @@ import env from '#start/env'
 import mail from '@adonisjs/mail/services/main'
 
 export const sendCreds = async ({
+  id,
   username,
   code,
   email,
   loginUrl,
 }: {
+  id?: number
   username: string
-  code: string
+  code?: string
   email: string
   loginUrl: string
 }) => {

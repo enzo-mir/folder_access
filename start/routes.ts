@@ -35,7 +35,7 @@ router.get('/logout', async ({ auth, response }) => {
 })
 
 router.get('/users', [PagesController, 'users']).use(middleware.auth())
-router.post('/user', [SettingsController, 'createUser'])
+router.post('/user', [SettingsController, 'manageUser'])
 router.post('/role', [SettingsController, 'createRole'])
 router.delete('/role', [SettingsController, 'deleteRole'])
 router.delete('/user', [SettingsController, 'deleteUser'])
@@ -46,3 +46,4 @@ router.post('/folder-permissions', [PermissionsController, 'create'])
 router.delete('/folder-permissions', [PermissionsController, 'delete'])
 router.post('/folder', [FilesController, 'findFolder'])
 router.put('/role', [SettingsController, 'updateRole'])
+router.put('/user', [SettingsController, 'manageUser'])

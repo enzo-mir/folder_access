@@ -1,5 +1,5 @@
 import { type HttpContext } from '@adonisjs/core/http'
-import { createUserSchema, deleteUserSchema } from '../validator/user.schema.js'
+import { createUserSchema, deleteUserSchema, updateUserSchema } from '../validator/user.schema.js'
 import User from '#models/user'
 import { ZodError } from 'zod'
 import { createRoleSchema, deletRoleSchema, updateRoleSchema } from '../validator/role.schema.js'
@@ -48,19 +48,31 @@ export default class SettingsController {
     return fullUrl.substring(0, fullUrl.lastIndexOf(requestUrl))
   }
 
-  async createUser(ctx: HttpContext) {
+  async manageUser(ctx: HttpContext) {
     await this.bouncer(ctx, "You don't have the access rights to create a user")
 
     try {
-      const payload = await createUserSchema.parseAsync(ctx.request.all())
+      const parser = ctx.request.method() === 'PUT' ? updateUserSchema : createUserSchema
+      const payload = await parser.parseAsync(ctx.request.all())
 
       if (payload.email) {
         const loginUrl = this.getLoginUrl(ctx)
-        await sendCreds({ ...payload, email: payload.email, loginUrl })
+        const getCode = 'code' in payload ? (payload.code as string) : undefined
+
+        await sendCreds({
+          username: payload.username,
+          code: getCode,
+          email: payload.email,
+          loginUrl,
+        })
         delete payload.email
       }
-
-      await User.create(payload)
+      if (payload.id) {
+        const { id, ...updateData } = payload
+        await User.query().update(updateData).where({ id: payload.id })
+      } else {
+        await User.create(payload)
+      }
 
       return ctx.response.redirect().back()
     } catch (error) {
@@ -177,6 +189,21 @@ export default class SettingsController {
         })
       }
       return ctx.response.redirect().back()
+    }
+  }
+
+  async updateUser(ctx: HttpContext) {
+    await this.bouncer(ctx, "You don't have the access rights to update a user")
+
+    try {
+      const payload = await updateUserSchema.parseAsync(ctx.request.all())
+      const user = await User.findOrFail(payload.id)
+
+      await user.merge(payload).save()
+
+      return ctx.response.redirect().back()
+    } catch (error) {
+      return this.handleCreateUserError(ctx, error)
     }
   }
 }

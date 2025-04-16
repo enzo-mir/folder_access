@@ -92,8 +92,8 @@ const Role = ({
                     id="level"
                     onChange={(e) => setData('level', Number(e.target.value))}
                     value={data.level}
-                    /*    min={isSameRoleAsUser() ? getHigheRole(true) + 1 : 0}
-                    max={isSameRoleAsUser() ? undefined : getHigheRole(false) - 1} */
+                    min={isSameRoleAsUser() ? getHigheRole(true) + 1 : 0}
+                    max={isSameRoleAsUser() ? undefined : getHigheRole(false) - 1}
                   />
 
                   <button
