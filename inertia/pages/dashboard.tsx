@@ -1,5 +1,12 @@
 import User from '#models/user'
-import { FiSearch, FiUser, FiChevronRight, FiHome, FiPlus, FiUpload, FiUserCheck } from 'react-icons/fi'
+import {
+  FiUser,
+  FiChevronRight,
+  FiHome,
+  FiPlus,
+  FiUpload,
+  FiUserCheck,
+} from 'react-icons/fi'
 import Layout from './layout'
 import { ReactNode, useState } from 'react'
 import { Link } from '@inertiajs/react'
@@ -32,7 +39,7 @@ const Dashboard = ({
   })
 
   return (
-    <main className="h-[100%] bg-gray-50 p-6">
+    <main className="bg-gray-50 p-6">
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-gray-800">File Manager</h1>
         <p className="text-gray-600">Access and manage your files and folders</p>
@@ -116,6 +123,7 @@ const Dashboard = ({
           newPath={newPath}
           currentPath={currentPath}
           files={files}
+          isAdmin={isAdmin}
         />
       ) : content !== undefined ? (
         <EditFile content={content} />

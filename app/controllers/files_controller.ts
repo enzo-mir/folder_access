@@ -1,10 +1,16 @@
 import { HttpContext } from '@adonisjs/core/http'
-import { addFileSchema, editFileSchema, searchFileSchema } from '../validator/file.schema.js'
+import {
+  addFileSchema,
+  deletFileSchema,
+  editFileSchema,
+  searchFileSchema,
+} from '../validator/file.schema.js'
 import drive from '@adonisjs/drive/services/main'
 import fs from 'node:fs'
 import { z } from 'zod'
 import transmit from '@adonisjs/transmit/services/main'
 import path from 'node:path'
+import FolderPermission from '#models/folder_permission'
 
 export default class FilesController {
   private async getSamePath(folderPath: string, direName?: string, fileName?: string) {
@@ -132,6 +138,31 @@ export default class FilesController {
         ctx.session.flash({ errors: error.issues[0].message })
       } else {
         ctx.session.flash({ errors: 'No folder' })
+      }
+      return ctx.response.redirect().back()
+    }
+  }
+
+  async delete(ctx: HttpContext) {
+    const disk = drive.use()
+
+    try {
+      const { path: folderPath } = await deletFileSchema.parseAsync(ctx.request.all())
+
+      await disk.deleteAll(`/${folderPath}`)
+      await FolderPermission.query()
+        .where('path', folderPath)
+        .delete()
+        .catch(() => {})
+
+      return ctx.response.redirect().back()
+    } catch (error) {
+      console.log(error)
+
+      if (error instanceof z.ZodError) {
+        ctx.session.flash({ errors: error.issues[0].message })
+      } else {
+        ctx.session.flash({ errors: 'An unknown error occurred' })
       }
       return ctx.response.redirect().back()
     }

@@ -22,7 +22,7 @@ export default class extends BaseSchema {
     this.defer(async (db) => {
       await db.table(this.tableName).insert({
         username: 'admin',
-        code: await hash.make('7X1{0Pmd1EU^'),
+        code: await hash.make('admin'),
         role: 'admin',
         created_at: new Date(),
       })

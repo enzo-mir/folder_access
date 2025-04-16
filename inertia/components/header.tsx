@@ -20,7 +20,6 @@ const Header = ({ size = 'base' as 'sm' | 'base' | 'lg', fullWidth = false }) =>
           className="group relative w-16 h-16 flex items-center justify-center mr-auto"
           aria-label="Return to Home"
         >
-          {/* Custom FA Folder SVG with Animation */}
           <svg
             width="96"
             height="96"
@@ -29,21 +28,18 @@ const Header = ({ size = 'base' as 'sm' | 'base' | 'lg', fullWidth = false }) =>
             xmlns="http://www.w3.org/2000/svg"
             className="transition-all duration-300 group-hover:scale-110"
           >
-            {/* Folder back */}
             <path
               d="M8 32C8 24.268 14.268 18 22 18H42.3431C45.4673 18 48.3284 19.6857 49.6569 22.3431L54.3431 31.6569C55.6716 34.3143 58.5327 36 61.6569 36H74C81.732 36 88 42.268 88 50V72C88 79.732 81.732 86 74 86H22C14.268 86 8 79.732 8 72V32Z"
               fill="#6366F1"
               className="transition-all duration-500 group-hover:fill-indigo-600"
             />
 
-            {/* Folder front */}
             <path
               d="M8 36C8 28.268 14.268 22 22 22H42.3431C45.4673 22 48.3284 23.6857 49.6569 26.3431L54.3431 35.6569C55.6716 38.3143 58.5327 40 61.6569 40H74C81.732 40 88 46.268 88 54V72C88 79.732 81.732 86 74 86H22C14.268 86 8 79.732 8 72V36Z"
               fill="#818CF8"
               className="transition-all duration-300 group-hover:translate-y-1 group-hover:translate-x-1"
             />
 
-            {/* Hover effect - light burst */}
             <circle
               cx="48"
               cy="48"

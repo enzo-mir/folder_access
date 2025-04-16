@@ -1,6 +1,4 @@
 import { router } from '@inertiajs/react'
-import Layout from '@pages/layout'
-import { ReactNode } from 'react'
 
 function NotFound() {
   return (

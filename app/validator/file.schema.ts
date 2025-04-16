@@ -48,3 +48,10 @@ export const searchFileSchema = z.object({
     .min(1, 'Path cannot be empty')
     .transform((val) => val.trim().replace(/^\/+/, '')),
 })
+
+export const deletFileSchema = z.object({
+  path: z
+    .string()
+    .min(1, 'Path cannot be empty')
+    .transform((val) => val.trim().replace(/^\/+/, '')),
+})
