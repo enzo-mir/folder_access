@@ -1,0 +1,75 @@
+name: CI/CD pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          version: 8.15.6
+          run_install: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Install dependencies
+        run: pnpm build
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd ~/htdocs/access.enzomrg.com
+            git pull origin main
+
+            echo "Copying public/uplaods from old build"
+            cp -r build/storage public
+
+
+            echo "Removing old build and assets"
+
+            rm -rf build
+            rm -rf public/assets
+
+            echo "Installing dependencies and building the app"
+
+            pnpm install
+            pnpm build
+
+            echo "Moving public/images to new build"
+            mv public/storage build
+
+            cd build
+            pnpm i -P
+                    
+            cat > .env << 'EOL'
+            ${{ secrets.ENV_CONTENT }}
+            EOL
+
+            pm2 start ../ecosystem.config.cjs
+            pm2 save
