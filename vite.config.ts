@@ -11,6 +11,10 @@ export default defineConfig({
     adonisjs({ entrypoints: ['inertia/app/app.tsx'], reload: ['resources/views/**/*.edge'] }),
   ],
 
+  server: {
+    allowedHosts: ['access.enzomrg.com'],
+  },
+
   resolve: {
     alias: {
       '@components': `${getDirname(import.meta.url)}/inertia/components/`,
