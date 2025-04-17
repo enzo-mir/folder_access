@@ -16,15 +16,14 @@ export default class RefreshDatabase extends BaseJob {
     try {
       logger.info('Starting database refresh job...')
       const { stdout, stderr } = await execAsync('node ace migration:fresh')
+      const disk = drive.use()
+      await disk.deleteAll('/')
       if (stderr) {
         logger.error('Database refresh failed:')
         logger.error(stderr)
       } else {
         logger.info('Database refreshed successfully.')
         logger.info(stdout)
-
-        const disk = drive.use()
-        await disk.deleteAll('/')
       }
     } catch (error) {
       logger.error('Error executing database refresh command:')
