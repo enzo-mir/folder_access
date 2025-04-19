@@ -68,7 +68,7 @@ jobs:
             cd build
             pnpm i -P
 
-            cp -r build/jobs build
+            cp -r jobs build
                     
             cat > .env << 'EOL'
             ${{ secrets.ENV_CONTENT }}

@@ -3,7 +3,7 @@
 # Job configuration
 JOB_NAME="RefreshDatabase"
 QUEUE_NAME="database_refresh"
-LOG_FILE="~/cronlogs/logs.log"
+LOG_FILE="../../../../cronlogs/logs.log"
 
 # Logging function
 log() {
@@ -18,7 +18,7 @@ perform() {
     log "INFO" "Starting database refresh job..."
     
     # Run migrations
-    output=$(node ace migration:fresh && rm -rf storage -r 2>&1)
+    output=$(cd ../ && node ace migration:fresh --force && rm -rf storage -r 2>&1)
     status=$?
     
        log "INFO" "Clean directories..."
