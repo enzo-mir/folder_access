@@ -9,13 +9,5 @@ module.exports = {
       exec_mode: 'fork',
       instances: 1,
     },
-    {
-      name: 'resque-scheduler_access_folder',
-      script: 'node ace resque:start --schedule --worker --queue-name=database_refresh',
-      exec_mode: 'fork',
-      instances: 1,
-      autorestart: true,
-      watch: false,
-    },
   ],
 }

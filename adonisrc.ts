@@ -15,7 +15,6 @@ export default defineConfig({
     () => import('@adonisjs/lucid/commands'),
     () => import('@adonisjs/bouncer/commands'),
     () => import('@adonisjs/mail/commands'),
-    () => import('adonis-resque/commands'),
   ],
 
   /*
@@ -49,7 +48,6 @@ export default defineConfig({
     () => import('@adonisjs/drive/drive_provider'),
     () => import('@adonisjs/transmit/transmit_provider'),
     () => import('@adonisjs/redis/redis_provider'),
-    () => import('adonis-resque/providers/resque_provider'),
   ],
 
   /*

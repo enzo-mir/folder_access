@@ -51,6 +51,7 @@ jobs:
             cp -r build/storage public
 
 
+
             echo "Removing old build and assets"
 
             rm -rf build
@@ -66,10 +67,13 @@ jobs:
 
             cd build
             pnpm i -P
+
+            cp -r build/jobs build
                     
             cat > .env << 'EOL'
             ${{ secrets.ENV_CONTENT }}
             EOL
 
+            pm2 kill
             pm2 start ../ecosystem.config.cjs
             pm2 save
