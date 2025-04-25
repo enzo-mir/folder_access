@@ -18,7 +18,7 @@ perform() {
     log "INFO" "Starting database refresh job..."
     
     # Run migrations
-    output=$(cd ../ && node ace migration:fresh --force && rm -rf storage -r 2>&1)
+    output=$(cd ../ && node ace migration:fresh --force && rm -rf ../storage -r 2>&1)
     status=$?
     
        log "INFO" "Clean directories..."

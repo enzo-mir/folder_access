@@ -64,11 +64,11 @@ jobs:
 
             echo "Moving public/images to new build"
             mv public/storage build
+            mv jobs build
 
             cd build
             pnpm i -P
 
-            cp -r jobs build
                     
             cat > .env << 'EOL'
             ${{ secrets.ENV_CONTENT }}
